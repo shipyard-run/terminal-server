@@ -37,13 +37,22 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleWebsocket(w http.ResponseWriter, r *http.Request) {
+	workdir := r.URL.Query().Get("workdir")
+	user := r.URL.Query().Get("user")
+	target := r.URL.Query().Get("target")
+	shell := r.URL.Query().Get("shell")
+
+	log.Printf("docker exec -ti -w %s -u %s %s %s", workdir, user, target, shell)
+
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(fmt.Errorf("Unable to upgrade connection"))
 		return
 	}
 
-	cmd := exec.Command("/bin/bash", "-l") // #nosec
+	// cmd := exec.Command("/bin/bash", "-l") // #nosec
+	cmd := exec.Command("/usr/bin/docker", "exec", "-ti", "-w", workdir, "-u", user, target, shell)
 	cmd.Env = append(os.Environ(), "TERM=xterm")
 
 	tty, err := pty.Start(cmd)

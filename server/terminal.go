@@ -52,7 +52,7 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// cmd := exec.Command("/bin/bash", "-l") // #nosec
-	cmd := exec.Command("/usr/bin/docker", "exec", "-ti", "-w", workdir, "-u", user, target, shell)
+	cmd := exec.Command("/usr/local/bin/docker", "exec", "-ti", "-w", workdir, "-u", user, target, shell)
 	cmd.Env = append(os.Environ(), "TERM=xterm")
 
 	tty, err := pty.Start(cmd)

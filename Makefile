@@ -1,7 +1,7 @@
 build:
-	docker build -t shipyardrun/terminal-server .
+	docker build -t registry.shipyard.run/terminal-server .
 
 push:
-	docker push shipyardrun/terminal-server
+	docker push registry.shipyard.run/terminal-server
 
 all: build push

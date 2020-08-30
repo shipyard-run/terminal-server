@@ -1,0 +1,38 @@
+name: Docker
+
+on:
+  push:
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+jobs:
+  # Push image to GitHub Package Registry.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push:
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build -t gcr.io/shipyard-287511/terminal-server:${GITHUB_REF#refs/tags/} .
+
+      # Setup gcloud CLI
+      - 
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '270.0.0'
+          service_account_key: ${{ secrets.GCP_KEY }}
+
+         # Configure docker to use the gcloud command-line tool as a credential helper
+      - run: |
+          # Set up docker to authenticate
+          # via gcloud command-line tool.
+          gcloud auth configure-docker
+
+      - name: Push image
+        run: |
+          docker push gcr.io/shipyard-287511/terminal-server:${GITHUB_REF#refs/tags/}

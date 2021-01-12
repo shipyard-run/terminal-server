@@ -17,22 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build -t gcr.io/shipyard-287511/terminal-server:${GITHUB_REF#refs/tags/} .
-
-      # Setup gcloud CLI
-      - 
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1 
         with:
-          version: '270.0.0'
-          service_account_key: ${{ secrets.GCP_KEY }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
 
-         # Configure docker to use the gcloud command-line tool as a credential helper
-      - run: |
-          # Set up docker to authenticate
-          # via gcloud command-line tool.
-          gcloud auth configure-docker
+      - name: Build image
+        run: docker build -t shipyardrun/terminal-server:${GITHUB_REF#refs/tags/} .
 
       - name: Push image
         run: |
-          docker push gcr.io/shipyard-287511/terminal-server:${GITHUB_REF#refs/tags/}
+          docker push shipyardrun/terminal-server:${GITHUB_REF#refs/tags/}
